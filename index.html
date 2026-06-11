@@ -1021,8 +1021,18 @@
 
     <script>
         // --- СОСТОЯНИЕ ПРИЛОЖЕНИЯ ---
+        // Загружаем сохранённые записи из localStorage (если есть)
         let records = [];
+        try {
+            const saved = localStorage.getItem('monolit_records');
+            if (saved) records = JSON.parse(saved);
+        } catch(e) { records = []; }
         let searchQuery = '';
+
+        // Сохраняем записи в localStorage при каждом изменении
+        function saveRecords() {
+            try { localStorage.setItem('monolit_records', JSON.stringify(records)); } catch(e) {}
+        }
 
         // --- УПРАВЛЕНИЕ ОЗВУЧКОЙ ---
         let ttsEnabled = true;
@@ -1218,6 +1228,7 @@
             };
 
             records.push(newRecord);
+            saveRecords();
             
             // Очистка полей
             phoneInput.value = '';
@@ -1248,6 +1259,7 @@
         // Удаление одной записи (по крестику на карточке)
         window.deleteRecord = function(id) {
             records = records.filter(r => r.id !== id);
+            saveRecords();
             lastSpokenPhone = '';
             render();
         }
@@ -1257,6 +1269,7 @@
             const confirmMsg = columnName === 'client' ? 'Существующий клиент' : 'ФИД';
             if (confirm(`Вы уверены, что хотите удалить ВСЕ записи из колонки "${confirmMsg}"?`)) {
                 records = records.filter(r => r.column !== columnName);
+                saveRecords();
                 lastSpokenPhone = '';
                 render();
             }
@@ -1443,6 +1456,7 @@
                     const record = records.find(r => r.id === id);
                     if (record) {
                         record[field] = newValue;
+                        saveRecords();
                     }
                 }
                 render();
