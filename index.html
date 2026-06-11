@@ -164,6 +164,195 @@
         }
         .theme-toggle:hover { color: var(--text-main); }
 
+        /* ===== RADIO PLAYER ===== */
+        .radio-player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 6px 14px;
+            min-width: 280px;
+            transition: border-color 0.2s;
+        }
+        .radio-player:hover { border-color: var(--primary); }
+
+        .radio-play-btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 12px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .radio-play-btn:hover { background-color: var(--primary-hover); transform: scale(1.08); }
+        .radio-play-btn.loading {
+            animation: radio-spin 1s linear infinite;
+        }
+        @keyframes radio-spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .radio-nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 4px;
+            flex-shrink: 0;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .radio-nav-btn:hover { color: var(--primary); }
+
+        .radio-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+        .radio-station-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+        .radio-status {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.3;
+        }
+        .radio-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .radio-dot.live { background: #ef4444; animation: radio-pulse-dot 1.2s ease-in-out infinite; }
+        @keyframes radio-pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        .radio-volume {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        .radio-volume i { font-size: 11px; color: var(--text-muted); }
+        .radio-volume-slider {
+            -webkit-appearance: none;
+            width: 54px;
+            height: 3px;
+            background: var(--border-color);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        .radio-volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Dropdown list of stations */
+        .radio-stations-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 220px;
+            overflow: hidden;
+            animation: fadeIn 0.15s ease-out;
+        }
+        .radio-stations-dropdown.open { display: block; }
+        .radio-station-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: background 0.15s;
+        }
+        .radio-station-item:hover { background: var(--bg-body); }
+        .radio-station-item.active {
+            background: var(--bg-form);
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .radio-station-item i {
+            font-size: 11px;
+            color: var(--text-muted);
+            width: 14px;
+        }
+        .radio-station-item.active i { color: var(--primary); }
+        .radio-player-wrap {
+            position: relative;
+        }
+
+        /* Кнопка озвучки в шапке */
+        .tts-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 20px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 500;
+        }
+        .tts-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .tts-toggle.tts-on {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .tts-toggle.tts-off {
+            background-color: var(--bg-body);
+            border-color: var(--border-color);
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
         /* Main Content */
         main {
             padding: 30px 40px;
@@ -380,22 +569,86 @@
             margin-top: 20px;
         }
 
+        /* Базовый стиль переливающейся кнопки */
         .quick-reply-btn {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 16px;
+            border: none;
+            color: #fff;
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            background-size: 200% 100%;
+            background-position: 0% 50%;
+            transition: background-position 0.4s ease, transform 0.15s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            letter-spacing: 0.2px;
+        }
+        .quick-reply-btn:hover {
+            background-position: 100% 50%;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 5px 16px rgba(0,0,0,0.22);
+        }
+        .quick-reply-btn:active {
+            transform: translateY(0) scale(0.98);
         }
 
-        .quick-reply-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        /* Анимация переливания цвета */
+        @keyframes qr-shimmer {
+            0%   { background-position: 0%   50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0%   50%; }
+        }
+
+        /* Индивидуальные цвета */
+        .qr-red {
+            background-image: linear-gradient(90deg, #ff416c, #ff4b2b, #ff6e6e, #ff416c);
+            animation: qr-shimmer 3.5s ease infinite;
+        }
+        .qr-orange {
+            background-image: linear-gradient(90deg, #f7971e, #ffd200, #f7971e, #ffa502);
+            animation: qr-shimmer 3.8s ease infinite;
+        }
+        .qr-yellow {
+            background-image: linear-gradient(90deg, #f9d423, #f83600, #f9d423, #fc913a);
+            animation: qr-shimmer 4s ease infinite;
+        }
+        .qr-lime {
+            background-image: linear-gradient(90deg, #56ab2f, #a8e063, #56ab2f, #78e08f);
+            animation: qr-shimmer 3.6s ease infinite;
+        }
+        .qr-teal {
+            background-image: linear-gradient(90deg, #11998e, #38ef7d, #11998e, #2af598);
+            animation: qr-shimmer 3.4s ease infinite;
+        }
+        .qr-purple {
+            background-image: linear-gradient(90deg, #8e2de2, #4a00e0, #8e2de2, #bc4cf7);
+            animation: qr-shimmer 3.7s ease infinite;
+        }
+        .qr-blue {
+            background-image: linear-gradient(90deg, #2980b9, #6dd5fa, #2980b9, #2193b0);
+            animation: qr-shimmer 3.9s ease infinite;
+        }
+        .qr-pink {
+            background-image: linear-gradient(90deg, #f953c6, #b91d73, #f953c6, #ee0979);
+            animation: qr-shimmer 3.5s ease infinite;
+        }
+        .qr-coral {
+            background-image: linear-gradient(90deg, #e96c4c, #ff9a44, #e96c4c, #fc6076);
+            animation: qr-shimmer 4.1s ease infinite;
+        }
+
+        /* Кнопка «Многоканальный» */
+        .quick-reply-btn.multichannel-btn {
+            background-image: linear-gradient(90deg, #1a6fff, #45caff, #1a6fff, #00b4db);
+            background-size: 200% 100%;
+            animation: qr-shimmer 3.2s ease infinite;
+            border: none;
+            color: white;
+            font-weight: 700;
+        }
+        .quick-reply-btn.multichannel-btn:hover {
+            box-shadow: 0 5px 20px rgba(69,202,255,0.45);
         }
 
         /* Алерт о дубликате */
@@ -424,9 +677,9 @@
         /* Columns Section */
         .columns-container {
             display: grid;
-            grid-template-columns: 1fr auto 1fr; /* Изменили сетку для разделителя */
+            grid-template-columns: 1fr auto 1fr;
             gap: 20px;
-            align-items: stretch; /* Растягивает разделитель на всю высоту */
+            align-items: stretch;
         }
 
         .column {
@@ -600,11 +853,46 @@
                 <p>Терминал управления данными</p>
             </div>
         </div>
+        <!-- Радиоплеер в шапке -->
+        <div class="radio-player-wrap">
+            <div class="radio-player" id="radioPlayer">
+                <button class="radio-nav-btn" id="radioPrev" title="Предыдущая станция">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="radio-play-btn" id="radioPlayBtn" title="Воспроизвести / Пауза">
+                    <i class="fas fa-play" id="radioPlayIcon"></i>
+                </button>
+                <button class="radio-nav-btn" id="radioNext" title="Следующая станция">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <div class="radio-info" id="radioInfo" title="Выбрать станцию">
+                    <div class="radio-station-name" id="radioStationName">Русское Радио</div>
+                    <div class="radio-status">
+                        <div class="radio-dot" id="radioDot"></div>
+                        <span id="radioStatusText">остановлено</span>
+                    </div>
+                </div>
+                <div class="radio-volume">
+                    <i class="fas fa-volume-down"></i>
+                    <input type="range" class="radio-volume-slider" id="radioVolume" min="0" max="100" value="70">
+                </div>
+            </div>
+            <!-- Выпадающий список станций -->
+            <div class="radio-stations-dropdown" id="radioDropdown">
+                <!-- Заполняется через JS -->
+            </div>
+        </div>
+
         <div class="header-right">
             <div class="secure-badge">
                 <div class="secure-dot"></div>
                 Защищенное соединение
             </div>
+            <!-- Кнопка включения/выключения озвучки -->
+            <button class="tts-toggle tts-on" id="ttsToggle" title="Включить/выключить озвучку дубликатов">
+                <i class="fas fa-volume-up"></i>
+                <span>Озвучка вкл</span>
+            </button>
             <button class="theme-toggle" id="themeToggle" title="Сменить тему">
                 <i class="fas fa-moon"></i>
             </button>
@@ -664,14 +952,18 @@
 
             <!-- Кнопки быстрого ответа -->
             <div class="quick-replies">
-                <button type="button" class="quick-reply-btn">Не дозвонился 1</button>
-                <button type="button" class="quick-reply-btn">Не дозвонился 2</button>
-                <button type="button" class="quick-reply-btn">Не дозвонился 3</button>
-                <button type="button" class="quick-reply-btn">Не дозвонился 4</button>
-                <button type="button" class="quick-reply-btn">Дал телефон менеджера</button>
-                <button type="button" class="quick-reply-btn">Ждёт звонок менеджера</button>
-                <button type="button" class="quick-reply-btn">Уже разговаривал с менеджером</button>
-                <button type="button" class="quick-reply-btn">Не дозвонился</button>
+                <button type="button" class="quick-reply-btn qr-red">Не дозвонился 1</button>
+                <button type="button" class="quick-reply-btn qr-orange">Не дозвонился 2</button>
+                <button type="button" class="quick-reply-btn qr-yellow">Не дозвонился 3</button>
+                <button type="button" class="quick-reply-btn qr-lime">Не дозвонился 4</button>
+                <!-- Кнопка «Многоканальный» -->
+                <button type="button" class="quick-reply-btn multichannel-btn" id="multichannelBtn">
+                    <i class="fas fa-layer-group" style="margin-right:5px;"></i>Многоканальный
+                </button>
+                <button type="button" class="quick-reply-btn qr-purple">Дал телефон менеджера</button>
+                <button type="button" class="quick-reply-btn qr-blue">Ждёт звонок менеджера</button>
+                <button type="button" class="quick-reply-btn qr-teal">Уже разговаривал с менеджером</button>
+                <button type="button" class="quick-reply-btn qr-coral">Не дозвонился</button>
             </div>
         </section>
 
@@ -732,6 +1024,43 @@
         let records = [];
         let searchQuery = '';
 
+        // --- УПРАВЛЕНИЕ ОЗВУЧКОЙ ---
+        let ttsEnabled = true;
+        let lastSpokenPhone  = '';   // чтобы не зачитывать один и тот же номер несколько раз подряд (ввод)
+        let lastSpokenSearch = '';   // чтобы не зачитывать одно и то же при поиске
+
+        const ttsToggleBtn = document.getElementById('ttsToggle');
+
+        ttsToggleBtn.addEventListener('click', () => {
+            ttsEnabled = !ttsEnabled;
+            if (ttsEnabled) {
+                ttsToggleBtn.className = 'tts-toggle tts-on';
+                ttsToggleBtn.innerHTML = '<i class="fas fa-volume-up"></i><span>Озвучка вкл</span>';
+                // При включении сбрасываем последний озвученный номер
+                lastSpokenPhone = '';
+            } else {
+                ttsToggleBtn.className = 'tts-toggle tts-off';
+                ttsToggleBtn.innerHTML = '<i class="fas fa-volume-mute"></i><span>Озвучка выкл</span>';
+                // Останавливаем текущее воспроизведение
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+            }
+        });
+
+        function speakText(text) {
+            if (!ttsEnabled) return;
+            if (!window.speechSynthesis) return;
+            if (!text || text === 'Нет описания') return;
+
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ru-RU';
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            window.speechSynthesis.speak(utterance);
+        }
+
         // --- DOM ЭЛЕМЕНТЫ ---
         const phoneInput = document.getElementById('phoneInput');
         const textInput = document.getElementById('textInput');
@@ -768,75 +1097,105 @@
         // --- БЫСТРЫЕ ОТВЕТЫ (КНОПКИ) ---
         quickReplyBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                textInput.value = btn.textContent;
+                textInput.value = btn.textContent.trim();
             });
         });
 
         // --- ГОЛОСОВОЙ ВВОД ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
         let isRecording = false;
         let recognition = null;
 
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'ru-RU';
-            // Ждем окончания фразы для точного распознавания
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
+        // Создаём новый объект распознавания при каждом запуске — это исключает
+        // ошибки «already started» и зависание после предыдущей сессии.
+        function createRecognition() {
+            const r = new SpeechRecognitionAPI();
+            r.lang = 'ru-RU';
+            r.interimResults = true;   // показываем текст по мере речи
+            r.maxAlternatives = 1;
+            r.continuous = false;
 
-            recognition.onstart = function() {
+            r.onstart = () => {
                 isRecording = true;
                 micBtn.classList.add('recording');
+                // Подсвечиваем поле описания во время записи
+                textInput.style.borderColor = '#ef4444';
+                textInput.placeholder = '🎤 Говорите…';
             };
 
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                // Вставляем текст ТОЛЬКО в поле "Связанный текст / Описание" (textInput)
-                if (textInput.value) {
-                    textInput.value += ' ' + transcript;
-                } else {
-                    textInput.value = transcript;
+            r.onresult = (event) => {
+                // Собираем все промежуточные + финальные результаты
+                let interim = '';
+                let final  = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const t = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        final += t;
+                    } else {
+                        interim += t;
+                    }
+                }
+                // Показываем финальный текст в поле; промежуточный — в placeholder
+                if (final) {
+                    textInput.value = textInput.value
+                        ? textInput.value.trimEnd() + ' ' + final
+                        : final;
+                }
+                if (interim) {
+                    textInput.placeholder = '🎤 ' + interim;
                 }
             };
 
-            recognition.onspeechend = function() {
-                recognition.stop();
-            };
-
-            recognition.onend = function() {
+            r.onend = () => {
                 isRecording = false;
                 micBtn.classList.remove('recording');
+                textInput.style.borderColor = '';
+                textInput.placeholder = 'Введите комментарий...';
+                recognition = null;
             };
 
-            recognition.onerror = function(event) {
-                console.error('Ошибка микрофона:', event.error);
+            r.onerror = (event) => {
                 isRecording = false;
                 micBtn.classList.remove('recording');
-                
+                textInput.style.borderColor = '';
+                textInput.placeholder = 'Введите комментарий...';
+                recognition = null;
+
                 if (event.error === 'not-allowed') {
-                    alert('Доступ к микрофону запрещен. Пожалуйста, разрешите доступ к микрофону в настройках браузера (значок замка в адресной строке слева).');
-                } else if (event.error !== 'no-speech') {
-                    alert('Ошибка распознавания речи: ' + event.error);
+                    alert('Доступ к микрофону запрещён.\n\nРазрешите доступ: нажмите на значок замка/камеры в адресной строке браузера и выберите «Разрешить» для микрофона.');
+                } else if (event.error === 'network') {
+                    alert('Нет подключения к интернету. Голосовой ввод требует интернет (Google Speech API).');
+                } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                    alert('Ошибка микрофона: ' + event.error);
                 }
             };
 
+            return r;
+        }
+
+        if (SpeechRecognitionAPI) {
             micBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (isRecording) {
+                if (isRecording && recognition) {
                     recognition.stop();
                 } else {
                     try {
+                        recognition = createRecognition();
                         recognition.start();
                     } catch (err) {
-                        console.error('Не удалось запустить микрофон:', err);
+                        isRecording = false;
+                        micBtn.classList.remove('recording');
+                        recognition = null;
+                        console.error('Микрофон:', err);
                     }
                 }
             });
         } else {
-            // Если браузер не поддерживает голосовой ввод
+            micBtn.style.opacity = '0.4';
+            micBtn.title = 'Голосовой ввод не поддерживается браузером';
             micBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                alert('К сожалению, ваш браузер не поддерживает голосовой ввод. Рекомендуем использовать Google Chrome, Yandex Browser или Edge.');
+                alert('Голосовой ввод недоступен.\n\nИспользуйте Google Chrome, Yandex Browser или Microsoft Edge.');
             });
         }
 
@@ -863,13 +1222,16 @@
             // Очистка полей
             phoneInput.value = '';
             textInput.value = '';
+
+            // Сбрасываем последний озвученный номер при добавлении
+            lastSpokenPhone = '';
             
             render();
         });
 
         // --- ПОИСК И ПРОВЕРКА В РЕАЛЬНОМ ВРЕМЕНИ ---
         searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.toLowerCase();
+            searchQuery = e.target.value.toLowerCase().trim();
             render();
         });
 
@@ -886,6 +1248,7 @@
         // Удаление одной записи (по крестику на карточке)
         window.deleteRecord = function(id) {
             records = records.filter(r => r.id !== id);
+            lastSpokenPhone = '';
             render();
         }
 
@@ -893,8 +1256,8 @@
         window.clearColumn = function(columnName) {
             const confirmMsg = columnName === 'client' ? 'Существующий клиент' : 'ФИД';
             if (confirm(`Вы уверены, что хотите удалить ВСЕ записи из колонки "${confirmMsg}"?`)) {
-                // Оставляем в массиве records только те элементы, которые НЕ принадлежат удаляемой колонке
                 records = records.filter(r => r.column !== columnName);
+                lastSpokenPhone = '';
                 render();
             }
         }
@@ -927,36 +1290,104 @@
                 phoneInput.classList.add('input-duplicate');
                 phoneInputWrapper.classList.add('is-duplicate');
                 duplicateAlert.classList.add('show');
+
+                // --- ОЗВУЧКА ДУБЛИКАТА ---
+                // Зачитываем текст найденных записей с таким номером (один раз при появлении)
+                if (currentInputPhone !== lastSpokenPhone) {
+                    lastSpokenPhone = currentInputPhone;
+                    const matchingRecords = records.filter(r => cleanPhone(r.phone) === currentInputPhone);
+                    if (matchingRecords.length > 0) {
+                        const textsToSpeak = matchingRecords
+                            .map(r => r.text)
+                            .filter(t => t && t !== 'Нет описания')
+                            .join('. ');
+                        if (textsToSpeak) {
+                            speakText(textsToSpeak);
+                        }
+                    }
+                }
             } else {
                 phoneInput.classList.remove('input-duplicate');
                 phoneInputWrapper.classList.remove('is-duplicate');
                 duplicateAlert.classList.remove('show');
+
+                // Если номер больше не совпадает — сбрасываем, чтобы при повторном вводе снова озвучивалось
+                if (lastSpokenPhone && lastSpokenPhone !== currentInputPhone) {
+                    lastSpokenPhone = '';
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                    }
+                }
             }
 
             // 2. Отрисовка карточек
-            records.forEach(record => {
-                // Применяем быстрый поиск
-                const phoneMatch = record.phone.toLowerCase().includes(searchQuery);
-                const textMatch = record.text.toLowerCase().includes(searchQuery);
+            // Сначала помечаем каждую запись как дубликат или нет,
+            // затем сортируем внутри каждой колонки: дубликаты — наверх.
+            // Нормализованный запрос: только цифры (для поиска по номерам без форматирования)
+            const cleanQuery = searchQuery.replace(/[^0-9]/g, '');
 
-                // Если введен поиск, и карточка не совпадает ни по номеру, ни по тексту - скрываем её
-                if (searchQuery && !phoneMatch && !textMatch) {
-                    return;
+            const annotated = records
+                .map(record => {
+                    const rawPhone  = record.phone.toLowerCase();
+                    const cleanRec  = cleanPhone(record.phone); // только цифры+«+»
+
+                    // Совпадение по телефону:
+                    // 1) сырая строка содержит запрос (например, скобки/дефисы совпадают)
+                    // 2) очищенный номер содержит очищенный запрос (цифры без форматирования)
+                    // 3) если начинается с «8», сравниваем и вариант с «7» в начале
+                    let phoneMatch = rawPhone.includes(searchQuery);
+                    if (!phoneMatch && cleanQuery.length >= 3) {
+                        phoneMatch = cleanRec.includes(cleanQuery);
+                    }
+                    // нормализация 8→+7: 89161234567 ↔ 79161234567
+                    if (!phoneMatch && cleanQuery.length >= 7) {
+                        const alt = cleanQuery.startsWith('8')
+                            ? '7' + cleanQuery.slice(1)
+                            : cleanQuery.startsWith('7')
+                                ? '8' + cleanQuery.slice(1)
+                                : null;
+                        if (alt) phoneMatch = cleanRec.includes(alt) || cleanRec.replace(/^\+/, '').includes(alt);
+                    }
+
+                    const textMatch = record.text.toLowerCase().includes(searchQuery);
+                    if (searchQuery && !phoneMatch && !textMatch) return null;
+                    const isSearchHighlight = searchQuery && phoneMatch;
+                    const isDuplicate = phoneFrequency[cleanRec] > 1 ||
+                                        (currentInputPhone && cleanRec === currentInputPhone) ||
+                                        isSearchHighlight;
+                    return { record, isDuplicate, isSearchHighlight };
+                })
+                .filter(Boolean);
+
+            // --- ОЗВУЧКА ПРИ ПОИСКЕ ---
+            // Если поисковая строка содержит совпадение по номеру телефона — зачитываем текст записей
+            if (searchQuery) {
+                const phoneHits = annotated.filter(a => a.isSearchHighlight);
+                if (phoneHits.length > 0 && searchQuery !== lastSpokenSearch) {
+                    lastSpokenSearch = searchQuery;
+                    const textsToSpeak = phoneHits
+                        .map(a => a.record.text)
+                        .filter(t => t && t !== 'Нет описания')
+                        .join('. ');
+                    if (textsToSpeak) {
+                        speakText(textsToSpeak);
+                    }
                 }
+            } else {
+                // Поиск очищен — сбрасываем, останавливаем озвучку поиска
+                if (lastSpokenSearch) {
+                    lastSpokenSearch = '';
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                }
+            }
 
-                const clean = cleanPhone(record.phone);
-                
-                // Проверяем, ищем ли мы сейчас именно этот номер в поиске
-                const isSearchHighlight = searchQuery && phoneMatch;
+            // Стабильная сортировка: дубликаты выше, остальное в исходном порядке
+            annotated.sort((a, b) => {
+                if (a.isDuplicate === b.isDuplicate) return 0;
+                return a.isDuplicate ? -1 : 1;
+            });
 
-                // Карточка считается дубликатом (красной), если:
-                // 1. Она добавлена дважды в базу
-                // 2. Ее номер сейчас вводится в верхнее поле добавления
-                // 3. Ее номер сейчас ищется в "Быстром поиске"
-                const isDuplicate = phoneFrequency[clean] > 1 || 
-                                    (currentInputPhone && clean === currentInputPhone) || 
-                                    isSearchHighlight;
-
+            annotated.forEach(({ record, isDuplicate }) => {
                 const itemEl = document.createElement('div');
                 itemEl.className = `data-item ${isDuplicate ? 'duplicate' : ''}`;
                 itemEl.innerHTML = `
@@ -1027,6 +1458,266 @@
 
         // Первоначальный рендер
         render();
+
+        // ===================================================
+        // РАДИОПЛЕЕР
+        // ===================================================
+        // Все потоки — MP3 128kbps (максимальная совместимость с браузерами)
+        // Резервные URL подставляются автоматически если основной не работает
+        const RADIO_STATIONS = [
+            {
+                name: 'Русское Радио',
+                urls: [
+                    'https://rusradio.hostingradio.ru/rusradio128.mp3',
+                    'https://rusradio.hostingradio.ru/rusradio96.aacp',
+                ],
+                icon: 'fa-music'
+            },
+            {
+                name: 'Хит FM',
+                urls: [
+                    'https://hitfm.hostingradio.ru/hitfm128.mp3',
+                    'https://hitfm.hostingradio.ru/hitfm96.aacp',
+                ],
+                icon: 'fa-bolt'
+            },
+            {
+                name: 'Монте-Карло',
+                urls: [
+                    'https://montecarlo.hostingradio.ru/montecarlo128.mp3',
+                    'https://montecarlo.hostingradio.ru/montecarlo96.aacp',
+                ],
+                icon: 'fa-star'
+            },
+            {
+                name: 'Наше Радио',
+                urls: [
+                    'https://nashe1.hostingradio.ru/nashe-128.mp3',
+                    'https://nashe.hostingradio.ru/nashe96.aacp',
+                ],
+                icon: 'fa-guitar'
+            },
+            {
+                name: 'Радио Maximum',
+                urls: [
+                    'https://maximum.hostingradio.ru/maximum128.mp3',
+                    'https://maximum.hostingradio.ru/maximum96.aacp',
+                ],
+                icon: 'fa-fire'
+            },
+            {
+                name: 'Европа Плюс',
+                urls: [
+                    'https://europaplus.hostingradio.ru/europaplus128.mp3',
+                    'https://europaplus.hostingradio.ru/europaplus96.aacp',
+                ],
+                icon: 'fa-globe'
+            },
+            {
+                name: 'Авторадио',
+                urls: [
+                    'https://avtoradio.hostingradio.ru/avtoradio128.mp3',
+                    'https://avtoradio.hostingradio.ru/avtoradio96.aacp',
+                ],
+                icon: 'fa-car'
+            },
+            {
+                name: 'Радио Дача',
+                urls: [
+                    'https://dacha.hostingradio.ru/dacha128.mp3',
+                    'https://dacha.hostingradio.ru/dacha96.aacp',
+                ],
+                icon: 'fa-home'
+            },
+            {
+                name: 'Ретро FM',
+                urls: [
+                    'https://retrofm.hostingradio.ru/retrofm128.mp3',
+                    'https://retrofm.hostingradio.ru/retrofm96.aacp',
+                ],
+                icon: 'fa-clock'
+            },
+            {
+                name: 'Радио Рекорд',
+                urls: [
+                    'https://record.hostingradio.ru/record128.mp3',
+                    'https://record.hostingradio.ru/record96.aacp',
+                ],
+                icon: 'fa-record-vinyl'
+            },
+        ];
+
+        let radioIndex    = 0;
+        let radioPlaying  = false;
+        let radioAudio    = new Audio();
+        let radioUrlIndex = 0;   // индекс резервного URL для текущей станции
+        radioAudio.volume = 0.7;
+
+        const radioPlayBtn     = document.getElementById('radioPlayBtn');
+        const radioPlayIcon    = document.getElementById('radioPlayIcon');
+        const radioStationName = document.getElementById('radioStationName');
+        const radioStatusText  = document.getElementById('radioStatusText');
+        const radioDot         = document.getElementById('radioDot');
+        const radioPrev        = document.getElementById('radioPrev');
+        const radioNext        = document.getElementById('radioNext');
+        const radioInfo        = document.getElementById('radioInfo');
+        const radioDropdown    = document.getElementById('radioDropdown');
+        const radioVolumeSlider = document.getElementById('radioVolume');
+
+        // Построить список станций в dropdown
+        function buildDropdown() {
+            radioDropdown.innerHTML = '';
+            RADIO_STATIONS.forEach((station, idx) => {
+                const item = document.createElement('div');
+                item.className = 'radio-station-item' + (idx === radioIndex ? ' active' : '');
+                item.innerHTML = `<i class="fas ${station.icon}"></i>${station.name}`;
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectStation(idx);
+                    closeDropdown();
+                });
+                radioDropdown.appendChild(item);
+            });
+        }
+
+        function openDropdown() {
+            buildDropdown();
+            radioDropdown.classList.add('open');
+        }
+        function closeDropdown() {
+            radioDropdown.classList.remove('open');
+        }
+
+        // Закрывать dropdown при клике вне
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.radio-player-wrap')) {
+                closeDropdown();
+            }
+        });
+
+        radioInfo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            radioDropdown.classList.contains('open') ? closeDropdown() : openDropdown();
+        });
+
+        function setRadioStatus(status) {
+            // status: 'stopped' | 'loading' | 'playing' | 'error'
+            if (status === 'playing') {
+                radioPlayIcon.className = 'fas fa-pause';
+                radioPlayBtn.classList.remove('loading');
+                radioDot.className = 'radio-dot live';
+                radioStatusText.textContent = '● эфир';
+            } else if (status === 'loading') {
+                radioPlayIcon.className = 'fas fa-circle-notch';
+                radioPlayBtn.classList.add('loading');
+                radioDot.className = 'radio-dot';
+                radioStatusText.textContent = 'загрузка…';
+            } else if (status === 'error') {
+                radioPlayIcon.className = 'fas fa-play';
+                radioPlayBtn.classList.remove('loading');
+                radioDot.className = 'radio-dot';
+                radioStatusText.textContent = 'ошибка соединения';
+            } else {
+                radioPlayIcon.className = 'fas fa-play';
+                radioPlayBtn.classList.remove('loading');
+                radioDot.className = 'radio-dot';
+                radioStatusText.textContent = 'остановлено';
+            }
+        }
+
+        function selectStation(idx) {
+            radioIndex    = idx;
+            radioUrlIndex = 0;
+            radioStationName.textContent = RADIO_STATIONS[idx].name;
+            if (radioPlaying) {
+                startRadio();
+            } else {
+                setRadioStatus('stopped');
+            }
+        }
+
+        function startRadio(urlIdx) {
+            if (urlIdx === undefined) urlIdx = 0;
+            radioUrlIndex = urlIdx;
+
+            const station = RADIO_STATIONS[radioIndex];
+            const urls    = station.urls;
+
+            if (urlIdx >= urls.length) {
+                // Все резервные URL исчерпаны
+                radioPlaying = false;
+                setRadioStatus('error');
+                return;
+            }
+
+            radioAudio.pause();
+            radioAudio = new Audio();
+            radioAudio.volume = radioVolumeSlider.value / 100;
+            radioAudio.preload = 'none';
+            radioAudio.src     = urls[urlIdx];
+
+            setRadioStatus('loading');
+
+            radioAudio.addEventListener('playing', () => {
+                radioPlaying = true;
+                setRadioStatus('playing');
+            }, { once: true });
+
+            // При ошибке — пробуем следующий резервный URL
+            radioAudio.addEventListener('error', () => {
+                if (urlIdx + 1 < urls.length) {
+                    startRadio(urlIdx + 1);
+                } else {
+                    radioPlaying = false;
+                    setRadioStatus('error');
+                }
+            }, { once: true });
+
+            radioAudio.play().catch(() => {
+                if (urlIdx + 1 < urls.length) {
+                    startRadio(urlIdx + 1);
+                } else {
+                    radioPlaying = false;
+                    setRadioStatus('error');
+                }
+            });
+        }
+
+        function stopRadio() {
+            radioAudio.pause();
+            radioAudio.src = '';
+            radioPlaying = false;
+            setRadioStatus('stopped');
+        }
+
+        radioPlayBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (radioPlaying || radioStatusText.textContent === 'загрузка…') {
+                stopRadio();
+            } else {
+                startRadio(0);
+            }
+        });
+
+        radioPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            radioIndex = (radioIndex - 1 + RADIO_STATIONS.length) % RADIO_STATIONS.length;
+            radioStationName.textContent = RADIO_STATIONS[radioIndex].name;
+            if (radioPlaying) startRadio();
+            closeDropdown();
+        });
+
+        radioNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            radioIndex = (radioIndex + 1) % RADIO_STATIONS.length;
+            radioStationName.textContent = RADIO_STATIONS[radioIndex].name;
+            if (radioPlaying) startRadio();
+            closeDropdown();
+        });
+
+        radioVolumeSlider.addEventListener('input', () => {
+            radioAudio.volume = radioVolumeSlider.value / 100;
+        });
 
     </script>
 </body>
