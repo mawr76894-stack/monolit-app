@@ -674,6 +674,61 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Алерт — клиент звонил в другую компанию */
+        .other-company-alert {
+            display: none;
+            background-color: #dc2626;
+            color: #ffffff;
+            border: 2px solid #991b1b;
+            padding: 14px 22px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
+            box-shadow: 0 0 0 4px rgba(220,38,38,0.25), var(--shadow);
+            letter-spacing: 0.3px;
+        }
+        .other-company-alert.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out, alertPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes alertPulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(220,38,38,0.25), var(--shadow); }
+            50%       { box-shadow: 0 0 0 10px rgba(220,38,38,0.10), var(--shadow); }
+        }
+
+        /* Карточка «другая компания» */
+        .data-item.other-company {
+            background-color: #fef2f2;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 1px #dc2626;
+        }
+        [data-theme="dark"] .data-item.other-company {
+            background-color: #450a0a;
+            border-color: #dc2626;
+        }
+        .data-item.other-company .item-phone {
+            color: #dc2626;
+            font-weight: 700;
+        }
+        .data-item.other-company .item-text {
+            color: #dc2626;
+        }
+        .other-company-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #dc2626;
+            color: #fff;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-top: 4px;
+            letter-spacing: 0.2px;
+        }
+
         /* Columns Section */
         .columns-container {
             display: grid;
@@ -972,6 +1027,11 @@
             <i class="fas fa-exclamation-triangle"></i> Найден дубликат в системе МОНОЛИТ
         </div>
 
+        <!-- Уведомление: клиент звонил в другую компанию -->
+        <div class="other-company-alert" id="otherCompanyAlert">
+            <i class="fas fa-ban"></i> ⚠️ КЛИЕНТ С ТАКИМ НОМЕРОМ УЖЕ ЗВОНИЛ В ДРУГУЮ КОМПАНИЮ!
+        </div>
+
         <!-- Горизонтальная неоновая строка над колонками -->
         <div class="neon-divider-horizontal" style="margin-bottom: 25px;"></div>
 
@@ -1038,6 +1098,7 @@
         let ttsEnabled = true;
         let lastSpokenPhone  = '';   // чтобы не зачитывать один и тот же номер несколько раз подряд (ввод)
         let lastSpokenSearch = '';   // чтобы не зачитывать одно и то же при поиске
+        let lastSpokenOtherCompany = ''; // чтобы не зачитывать одно и то же предупреждение
 
         const ttsToggleBtn = document.getElementById('ttsToggle');
 
@@ -1085,6 +1146,7 @@
         const themeToggle = document.getElementById('themeToggle');
         const quickReplyBtns = document.querySelectorAll('.quick-reply-btn');
         const duplicateAlert = document.getElementById('duplicateAlert');
+        const otherCompanyAlert = document.getElementById('otherCompanyAlert');
         const phoneInputWrapper = phoneInput.closest('.input-wrapper');
 
         // --- ИНИЦИАЛИЗАЦИЯ ТЕМЫ ---
@@ -1256,6 +1318,19 @@
             return phoneStr.replace(/[^0-9+]/g, '');
         }
 
+        // Извлечь мобильный номер (последние 11 цифр) и префикс компании (всё до них).
+        // Если номер <= 11 цифр — возвращаем весь номер как мобильный, префикс пуст.
+        function splitPhone(cleanedPhone) {
+            // Работаем только с цифрами (без «+»)
+            const digits = cleanedPhone.replace(/^\+/, '');
+            if (digits.length > 11) {
+                const mobile = digits.slice(-11);      // последние 11 цифр — мобильный
+                const prefix = digits.slice(0, digits.length - 11); // первые N цифр — код компании
+                return { mobile, prefix };
+            }
+            return { mobile: digits, prefix: '' };
+        }
+
         // Удаление одной записи (по крестику на карточке)
         window.deleteRecord = function(id) {
             records = records.filter(r => r.id !== id);
@@ -1284,7 +1359,9 @@
             let feedCount = 0;
 
             const currentInputPhone = cleanPhone(phoneInput.value);
+            const currentSplit = splitPhone(currentInputPhone);
             let isInputDuplicate = false;
+            let isOtherCompany   = false; // тот же мобильный, но другой префикс
 
             // 1. Подсчет частоты номеров в базе
             const phoneFrequency = {};
@@ -1293,9 +1370,25 @@
                 phoneFrequency[clean] = (phoneFrequency[clean] || 0) + 1;
             });
 
-            // Проверяем, есть ли вводимый сейчас номер уже в базе
+            // Проверяем, есть ли вводимый сейчас номер уже в базе (точное совпадение)
             if (currentInputPhone && phoneFrequency[currentInputPhone]) {
                 isInputDuplicate = true;
+            }
+
+            // Проверка «другая компания»: мобильный номер совпадает, но первые 4 цифры другие
+            // Применяется только когда введён достаточно длинный номер (> 11 знаков)
+            if (currentInputPhone && currentSplit.prefix && !isInputDuplicate) {
+                for (const r of records) {
+                    const recClean = cleanPhone(r.phone);
+                    const recSplit = splitPhone(recClean);
+                    if (
+                        recSplit.mobile === currentSplit.mobile &&   // мобильный одинаков
+                        recSplit.prefix !== currentSplit.prefix      // префикс (компания) разный
+                    ) {
+                        isOtherCompany = true;
+                        break;
+                    }
+                }
             }
 
             // Управление стилями поля ввода и предупреждающей надписью
@@ -1303,11 +1396,12 @@
                 phoneInput.classList.add('input-duplicate');
                 phoneInputWrapper.classList.add('is-duplicate');
                 duplicateAlert.classList.add('show');
+                otherCompanyAlert.classList.remove('show');
 
                 // --- ОЗВУЧКА ДУБЛИКАТА ---
-                // Зачитываем текст найденных записей с таким номером (один раз при появлении)
                 if (currentInputPhone !== lastSpokenPhone) {
                     lastSpokenPhone = currentInputPhone;
+                    lastSpokenOtherCompany = '';
                     const matchingRecords = records.filter(r => cleanPhone(r.phone) === currentInputPhone);
                     if (matchingRecords.length > 0) {
                         const textsToSpeak = matchingRecords
@@ -1319,40 +1413,51 @@
                         }
                     }
                 }
+            } else if (isOtherCompany) {
+                phoneInput.classList.add('input-duplicate');
+                phoneInputWrapper.classList.add('is-duplicate');
+                duplicateAlert.classList.remove('show');
+                otherCompanyAlert.classList.add('show');
+
+                // --- ОЗВУЧКА «ДРУГАЯ КОМПАНИЯ» ---
+                if (currentInputPhone !== lastSpokenOtherCompany) {
+                    lastSpokenOtherCompany = currentInputPhone;
+                    lastSpokenPhone = '';
+                    speakText('Клиент с таким номером уже звонил в другую компанию!');
+                }
             } else {
                 phoneInput.classList.remove('input-duplicate');
                 phoneInputWrapper.classList.remove('is-duplicate');
                 duplicateAlert.classList.remove('show');
+                otherCompanyAlert.classList.remove('show');
 
-                // Если номер больше не совпадает — сбрасываем, чтобы при повторном вводе снова озвучивалось
+                // Если номер больше не совпадает — сбрасываем
                 if (lastSpokenPhone && lastSpokenPhone !== currentInputPhone) {
                     lastSpokenPhone = '';
-                    if (window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                    }
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
+                }
+                if (lastSpokenOtherCompany && lastSpokenOtherCompany !== currentInputPhone) {
+                    lastSpokenOtherCompany = '';
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
                 }
             }
 
             // 2. Отрисовка карточек
-            // Сначала помечаем каждую запись как дубликат или нет,
-            // затем сортируем внутри каждой колонки: дубликаты — наверх.
             // Нормализованный запрос: только цифры (для поиска по номерам без форматирования)
             const cleanQuery = searchQuery.replace(/[^0-9]/g, '');
 
             const annotated = records
                 .map(record => {
                     const rawPhone  = record.phone.toLowerCase();
-                    const cleanRec  = cleanPhone(record.phone); // только цифры+«+»
+                    const cleanRec  = cleanPhone(record.phone);
+                    const recSplit  = splitPhone(cleanRec);
 
-                    // Совпадение по телефону:
-                    // 1) сырая строка содержит запрос (например, скобки/дефисы совпадают)
-                    // 2) очищенный номер содержит очищенный запрос (цифры без форматирования)
-                    // 3) если начинается с «8», сравниваем и вариант с «7» в начале
+                    // Совпадение по телефону
                     let phoneMatch = rawPhone.includes(searchQuery);
                     if (!phoneMatch && cleanQuery.length >= 3) {
                         phoneMatch = cleanRec.includes(cleanQuery);
                     }
-                    // нормализация 8→+7: 89161234567 ↔ 79161234567
+                    // нормализация 8→+7
                     if (!phoneMatch && cleanQuery.length >= 7) {
                         const alt = cleanQuery.startsWith('8')
                             ? '7' + cleanQuery.slice(1)
@@ -1365,15 +1470,23 @@
                     const textMatch = record.text.toLowerCase().includes(searchQuery);
                     if (searchQuery && !phoneMatch && !textMatch) return null;
                     const isSearchHighlight = searchQuery && phoneMatch;
+
+                    // Определяем «другая компания» для карточки относительно текущего ввода
+                    const isCardOtherCompany =
+                        currentSplit.prefix &&
+                        !isInputDuplicate &&
+                        recSplit.mobile === currentSplit.mobile &&
+                        recSplit.prefix !== currentSplit.prefix;
+
                     const isDuplicate = phoneFrequency[cleanRec] > 1 ||
                                         (currentInputPhone && cleanRec === currentInputPhone) ||
                                         isSearchHighlight;
-                    return { record, isDuplicate, isSearchHighlight };
+
+                    return { record, isDuplicate, isSearchHighlight, isCardOtherCompany };
                 })
                 .filter(Boolean);
 
             // --- ОЗВУЧКА ПРИ ПОИСКЕ ---
-            // Если поисковая строка содержит совпадение по номеру телефона — зачитываем текст записей
             if (searchQuery) {
                 const phoneHits = annotated.filter(a => a.isSearchHighlight);
                 if (phoneHits.length > 0 && searchQuery !== lastSpokenSearch) {
@@ -1387,26 +1500,39 @@
                     }
                 }
             } else {
-                // Поиск очищен — сбрасываем, останавливаем озвучку поиска
                 if (lastSpokenSearch) {
                     lastSpokenSearch = '';
                     if (window.speechSynthesis) window.speechSynthesis.cancel();
                 }
             }
 
-            // Стабильная сортировка: дубликаты выше, остальное в исходном порядке
+            // Стабильная сортировка: «другая компания» → дубликаты → остальное
             annotated.sort((a, b) => {
-                if (a.isDuplicate === b.isDuplicate) return 0;
-                return a.isDuplicate ? -1 : 1;
+                const rankA = a.isCardOtherCompany ? 0 : a.isDuplicate ? 1 : 2;
+                const rankB = b.isCardOtherCompany ? 0 : b.isDuplicate ? 1 : 2;
+                return rankA - rankB;
             });
 
-            annotated.forEach(({ record, isDuplicate }) => {
+            annotated.forEach(({ record, isDuplicate, isCardOtherCompany }) => {
                 const itemEl = document.createElement('div');
-                itemEl.className = `data-item ${isDuplicate ? 'duplicate' : ''}`;
+                // «Другая компания» имеет приоритет над обычным дубликатом
+                let itemClass = 'data-item';
+                if (isCardOtherCompany) itemClass += ' other-company';
+                else if (isDuplicate)   itemClass += ' duplicate';
+                itemEl.className = itemClass;
+
+                const phoneColor = isCardOtherCompany
+                    ? '#dc2626'
+                    : isDuplicate ? 'var(--duplicate-border)' : 'var(--primary)';
+
+                const otherCompanyBadge = isCardOtherCompany
+                    ? `<span class="other-company-badge"><i class="fas fa-ban"></i> Другая компания</span>`
+                    : '';
+
                 itemEl.innerHTML = `
                     <button class="delete-btn" onclick="deleteRecord('${record.id}')"><i class="fas fa-times"></i></button>
                     <div class="item-row">
-                        <i class="fas fa-phone-alt" style="color: ${isDuplicate ? 'var(--duplicate-border)' : 'var(--primary)'}; font-size: 12px;"></i>
+                        <i class="fas fa-phone-alt" style="color: ${phoneColor}; font-size: 12px;"></i>
                         <span class="item-phone">
                             <span class="editable-val">${record.phone}</span>
                             <button class="edit-btn" onclick="startEdit(this, '${record.id}', 'phone')"><i class="fas fa-pencil-alt"></i></button>
@@ -1419,6 +1545,7 @@
                             <button class="edit-btn" onclick="startEdit(this, '${record.id}', 'text')"><i class="fas fa-pencil-alt"></i></button>
                         </span>
                     </div>
+                    ${otherCompanyBadge}
                 `;
 
                 if (record.column === 'client') {
